@@ -1,5 +1,22 @@
 apply plugin: 'com.android.application'
 
+
+
+ext.appReleaseDir = ""
+
+def loadProperties() {
+    def proFile = file("../local.properties")
+    Properties p = new Properties()
+    proFile.withInputStream { stream->
+        p.load(stream)
+    }
+    appReleaseDir = p.appReleaseDir
+//    appVersionCode = Integer.valueOf(p.appVersionCode)
+//    appVersionName = p.appVersionName
+}
+
+loadProperties()
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
@@ -16,6 +33,23 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        android.applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def outputFile = output.outputFile
+                if (outputFile != null) {
+                    def releaseApkName = 'voiceprovide_';
+                    if (outputFile.name.endsWith("release.apk")) {
+                        releaseApkName = releaseApkName + "Release_V"
+                    } else if (outputFile.name.endsWith("debug.apk")) {
+                        releaseApkName = releaseApkName + "Debug_V"
+                    }
+                    releaseApkName = releaseApkName + variant.getVersionName() + '_' + getDate() + '.apk';
+//                    output.outputFile = new File(outputFile.parent, releaseApkName)
+                    output.outputFile = new File(appReleaseDir, releaseApkName)
+                }
+            }
+        }
     }
     repositories {
         flatDir {
@@ -29,6 +63,12 @@ android {
         }
     }
 
+}
+
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMddHHmm')
+    return formattedDate
 }
 
 dependencies {
