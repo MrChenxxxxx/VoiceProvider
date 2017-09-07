@@ -38,6 +38,9 @@ android {
 
         android.applicationVariants.all { variant ->
             variant.outputs.each { output ->
+
+//                println("APP_OUT_PATH : " + APP_OUT_PATH)
+                println("IS_JENKINS : " + IS_JENKINS)
                 def outputFile = output.outputFile
                 if (outputFile != null) {
                     def releaseApkName = 'voiceprovide_';
@@ -50,8 +53,10 @@ android {
 //                    output.outputFile = new File(outputFile.parent, releaseApkName)
                     if("true".equalsIgnoreCase(IS_JENKINS)){
 //                        output.outputFile = new File(appReleaseDir, releaseApkName)
+                        println("in sucess outputFileName :" + outputFileName)
                         output.outputFile = new File(APP_BUILD_PATH, releaseApkName)
                     }else {
+                        println("in fail outputFileName :")
                         output.outputFile = new File(outputFile.parent, releaseApkName)
                     }
                 }
