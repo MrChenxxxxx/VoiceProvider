@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 
 
 ext.appReleaseDir = ""
-ext.IS_JENKINS = false
+//ext.IS_JENKINS = false
 
 def loadProperties() {
     def proFile = file("../local.properties")
@@ -12,7 +12,7 @@ def loadProperties() {
         p.load(stream)
     }
     appReleaseDir = p.appReleaseDir
-    IS_JENKINS = p.IS_JENKINS
+//    IS_JENKINS = p.IS_JENKINS
 //    appVersionCode = Integer.valueOf(p.appVersionCode)
 //    appVersionName = p.appVersionName
 }
