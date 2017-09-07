@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 
 
 ext.appReleaseDir = ""
+ext.IS_JENKINS = false
 
 def loadProperties() {
     def proFile = file("../local.properties")
@@ -11,6 +12,7 @@ def loadProperties() {
         p.load(stream)
     }
     appReleaseDir = p.appReleaseDir
+    IS_JENKINS = p.IS_JENKINS
 //    appVersionCode = Integer.valueOf(p.appVersionCode)
 //    appVersionName = p.appVersionName
 }
@@ -46,7 +48,11 @@ android {
                     }
                     releaseApkName = releaseApkName + variant.getVersionName() + '_' + getDate() + '.apk';
 //                    output.outputFile = new File(outputFile.parent, releaseApkName)
-                    output.outputFile = new File(appReleaseDir, releaseApkName)
+                    if("true".equalsIgnoreCase(IS_JENKINS)){
+                        output.outputFile = new File(appReleaseDir, releaseApkName)
+                    }else {
+                        output.outputFile = new File(outputFile.parent, releaseApkName)
+                    }
                 }
             }
         }
