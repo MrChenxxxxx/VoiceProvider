@@ -36,10 +36,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
+
+        println("APP_OUT_PATH pre: " + APP_BUILD_PATH)
+        println("IS_JENKINS pre: " + IS_JENKINS)
+
         android.applicationVariants.all { variant ->
             variant.outputs.each { output ->
 
-//                println("APP_OUT_PATH : " + APP_OUT_PATH)
+                println("APP_OUT_PATH : " + APP_BUILD_PATH)
                 println("IS_JENKINS : " + IS_JENKINS)
                 def outputFile = output.outputFile
                 if (outputFile != null) {
@@ -75,6 +79,8 @@ android {
         }
     }
 
+    println("APP_OUT_PATH end: " + APP_BUILD_PATH)
+    println("IS_JENKINS end: " + IS_JENKINS)
 }
 
 def getDate() {
