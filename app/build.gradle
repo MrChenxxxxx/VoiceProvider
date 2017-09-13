@@ -8,7 +8,7 @@ ext.appReleaseDir = ""
 def loadProperties() {
     def proFile = file("../local.properties")
     Properties p = new Properties()
-    proFile.withInputStream { stream->
+    proFile.withInputStream { stream ->
         p.load(stream)
     }
     appReleaseDir = p.appReleaseDir
@@ -43,24 +43,31 @@ android {
         android.applicationVariants.all { variant ->
             variant.outputs.each { output ->
 
-                println("APP_OUT_PATH : " + APP_BUILD_PATH)
-                println("IS_JENKINS : " + IS_JENKINS)
+
                 def outputFile = output.outputFile
                 if (outputFile != null) {
+
+                    def productFlavor = variant.productFlavors[0].name
+
+                    //不是多渠道打包，默认选者baidu渠道
+                    if ("false".equalsIgnoreCase(IS_MULTI_CHANNEL) ) {
+                        if(!"baidu".equalsIgnoreCase(productFlavor)){
+                            return
+                        }
+                    }
+
+                    print("productFlavor : " + productFlavor)
+
                     def releaseApkName = 'voiceprovide_';
                     if (outputFile.name.endsWith("release.apk")) {
                         releaseApkName = releaseApkName + "Release_V"
                     } else if (outputFile.name.endsWith("debug.apk")) {
                         releaseApkName = releaseApkName + "Debug_V"
                     }
-                    releaseApkName = releaseApkName + variant.getVersionName() + '_' + getDate() + '.apk';
-//                    output.outputFile = new File(outputFile.parent, releaseApkName)
-                    if("true".equalsIgnoreCase(IS_JENKINS)){
-//                        output.outputFile = new File(appReleaseDir, releaseApkName)
-                        println("in sucess outputFileName :" + outputFileName)
+                    releaseApkName = releaseApkName + variant.getVersionName() + '_' + getDate() + "_" + productFlavor + '.apk';
+                    if ("true".equalsIgnoreCase(IS_JENKINS)) {
                         output.outputFile = new File(APP_BUILD_PATH, releaseApkName)
-                    }else {
-                        println("in fail outputFileName :")
+                    } else {
                         output.outputFile = new File(outputFile.parent, releaseApkName)
                     }
                 }
@@ -81,6 +88,17 @@ android {
 
     println("APP_OUT_PATH end: " + APP_BUILD_PATH)
     println("IS_JENKINS end: " + IS_JENKINS)
+
+    productFlavors {
+        baidu {}
+        xiaomi {}
+        _360 {}
+        wandoujia {}
+    }
+
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+    }
 }
 
 def getDate() {
